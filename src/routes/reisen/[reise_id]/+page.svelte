@@ -1,31 +1,39 @@
 <script>
-  export let reise;
-
-  // Logge reise-Daten zur Fehlerbehebung
-  console.log('Reise-Daten:', reise);
+  // Empfange die Daten von der Server-Komponente
+  export let data;
 </script>
 
-<div class="reise-detail">
-  {#if reise}
-    <h1>{reise.title}</h1>
-    <p><strong>Destination:</strong> {reise.destination}</p>
-    <p><strong>Start Date:</strong> {reise.start_date}</p>
-    <p><strong>End Date:</strong> {reise.end_date}</p>
-    <p><strong>Description:</strong> {reise.description}</p>
-    <img src={reise.image} alt={reise.title} class="reise-image" />
-  {:else}
-    <p>Die Reise konnte nicht geladen werden.</p>
-  {/if}
-</div>
+<!-- Prüfe ob Reisedaten vorhanden sind -->
+{#if data.reise}
+  <div class="reise-details">
+    <!-- Zeige das Reisebild und Details an -->
+    <img src={data.reise.image} alt={data.reise.title} class="reise-image" />
+    <h1>{data.reise.title}</h1>
+    <!-- Zeige die Reisedetails in strukturierter Form -->
+    <p><strong>Destination:</strong> {data.reise.destination}</p>
+    <p><strong>Startdatum:</strong> {data.reise.start_date}</p>
+    <p><strong>Enddatum:</strong> {data.reise.end_date}</p>
+    <p>{data.reise.description}</p>
 
-<style>
-  .reise-detail {
-    text-align: center;
-  }
-  .reise-image {
-    width: 100%;
-    max-width: 600px;
-    height: auto;
-    border-radius: 5px;
-  }
-</style>
+    <!-- Abschnitt für Teilnehmerliste -->
+    <h2>Teilnehmer</h2>
+    <!-- Prüfe ob Teilnehmer vorhanden sind -->
+    {#if data.personen && data.personen.length > 0}
+      <ul>
+        <!-- Iteriere über alle Teilnehmer und zeige ihre Namen -->
+        {#each data.personen as person}
+          <li>{person.name}</li>
+        {/each}
+      </ul>
+    {:else}
+      <!-- Fallback wenn keine Teilnehmer vorhanden -->
+      <p>Keine Teilnehmer gefunden.</p>
+    {/if}
+    <!-- Navigation zurück zur Übersicht -->
+    <a class="btn" href="/reisen">Zurück</a>
+  </div>
+  
+{:else}
+  <!-- Fehlermeldung wenn keine Reisedaten geladen werden konnten -->
+  <p>Die Reise konnte nicht geladen werden.</p>
+{/if}

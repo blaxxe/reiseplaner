@@ -3,77 +3,190 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+// Gemeinsam genutzte Variable für die DB-Verbindung.
 let db;
 
+/**
+ * Verbindet sich mit der Datenbank oder nutzt eine vorhandene Verbindung.
+ */
 export async function connectToDatabase() {
   if (!db) {
+    const client = new MongoClient(process.env.DB_URI);
     try {
-      console.log('Connecting to database with URI:', process.env.DB_URI); // Log the DB URI
-      const client = new MongoClient(process.env.DB_URI);
       await client.connect();
-      db = client.db('reiseplaner');
-      console.log('Database connection established');
+      db = client.db(process.env.DB_NAME);
+      console.log('Datenbank verbunden.');
     } catch (error) {
-      console.error('Error connecting to database:', error.message);
-      console.error('Stack Trace:', error.stack);
+      console.error('Verbindungsfehler:', error);
       throw error;
     }
   }
   return db;
 }
 
-// Holen aller Reisen
-export async function getReisen() {
-  await connectToDatabase(); // Ensure the database connection is established
-  const collection = db.collection('reisen');
-  return await collection.find({}).toArray();
+/**
+ * Erstellt einen neuen Eintrag in der Sammlung "reisen".
+ */
+export async function createReise(reise) {
+  const database = await connectToDatabase();
+  const collection = database.collection('reisen');
+  try {
+    const result = await collection.insertOne(reise);
+    console.log(`Reise erstellt (ID: ${result.insertedId}).`);
+    return result;
+  } catch (error) {
+    console.error('Fehler beim Erstellen der Reise:', error);
+    throw error;
+  }
 }
 
-// Holen einer einzelnen Reise basierend auf ihrer ID
-export async function getReise(id) {
+/**
+ * Lädt alle Personen und zieht für jede Person ihre zugeordneten Reisen heran.
+ */
+export async function getPersonen() {
+  const database = await connectToDatabase();
+  const collection = database.collection('personen');
   try {
-    await connectToDatabase(); // Ensure the database connection is established
-    console.log('Fetching reise with ID:', id); // Log the reise ID
-    const collection = db.collection('reisen');
-    const reise = await collection.findOne({ _id: new ObjectId(id) });
-
-    if (reise) {
-      reise._id = reise._id.toString(); // ObjectId in String umwandeln
+    const personen = await collection.find({}).toArray();
+    for (const person of personen) {
+      person._id = person._id.toString();
+      person.reisen = [];
+      for (const id of person.reise_ids || []) {
+        try {
+          const reise = await database
+            .collection('reisen')
+            .findOne({ _id: new ObjectId(id) });
+          if (reise) {
+            reise._id = reise._id.toString();
+            person.reisen.push(reise);
+          }
+        } catch (error) {
+          console.error(`Fehler beim Abrufen von Reise ${id}:`, error);
+        }
+      }
     }
+    return personen;
+  } catch (error) {
+    console.error('Fehler beim Abrufen der Personen:', error);
+    throw error;
+  }
+}
 
-    console.log('Fetched reise:', reise); // Log the fetched reise
+/**
+ * Erstellt eine neue Person in der Sammlung "personen".
+ */
+export async function createPerson(person) {
+  const database = await connectToDatabase();
+  const collection = database.collection('personen');
+  try {
+    const result = await collection.insertOne(person);
+    console.log(`Person erstellt (ID: ${result.insertedId}).`);
+    return result;
+  } catch (error) {
+    console.error('Fehler beim Erstellen der Person:', error);
+    throw error;
+  }
+}
+
+/**
+ * Lädt eine Person anhand ihrer ID und ruft deren zugeordnete Reisen ab.
+ */
+export async function getPerson(id) {
+  const database = await connectToDatabase();
+  const collection = database.collection('personen');
+  try {
+    const person = await collection.findOne({ _id: new ObjectId(id) });
+    if (person) {
+      person._id = person._id.toString();
+      person.reisen = [];
+      for (const reiseId of person.reise_ids || []) {
+        try {
+          const reise = await getReise(reiseId);
+          if (reise) person.reisen.push(reise);
+        } catch (error) {
+          console.error(`Fehler beim Abrufen der Reise ${reiseId}:`, error);
+        }
+      }
+    }
+    return person;
+  } catch (error) {
+    console.error(`Fehler bei Person ${id}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Lädt eine bestimmte Reise anhand ihrer ID aus der Sammlung "reisen".
+ */
+export async function getReise(id) {
+  const database = await connectToDatabase();
+  const collection = database.collection('reisen');
+  try {
+    const reise = await collection.findOne({ _id: new ObjectId(id) });
+    if (reise) reise._id = reise._id.toString();
     return reise;
   } catch (error) {
-    console.error('Error fetching reise:', error.message);
-    console.error('Stack Trace:', error.stack);
+    console.error(`Fehler bei Reise ${id}:`, error);
     throw error;
   }
 }
 
-// Erstellen einer neuen Reise
-export async function createReise(reise) {
+/**
+ * Lädt alle Reisen aus der Sammlung "reisen".
+ */
+export async function getReisen() {
+  const database = await connectToDatabase();
+  const collection = database.collection('reisen');
   try {
-    await connectToDatabase(); // Ensure the database connection is established
-    const collection = db.collection('reisen');
-    const result = await collection.insertOne(reise);
-    console.log('Inserted reise:', result);
-    return result;
+    const reisen = await collection.find({}).toArray();
+    return reisen.map((r) => ({ ...r, _id: r._id.toString() }));
   } catch (error) {
-    console.error('Error inserting reise:', error);
+    console.error('Fehler beim Abrufen der Reisen:', error);
     throw error;
   }
 }
 
-// Löschen einer Reise
+/**
+ * Lädt alle Personen, die eine bestimmte Reise-ID enthalten.
+ */
+export async function getPersonenByReiseId(reise_id) {
+  const database = await connectToDatabase();
+  const collection = database.collection('personen');
+  try {
+    const personen = await collection.find({ reise_ids: reise_id }).toArray();
+    return personen.map((p) => ({ ...p, _id: p._id.toString() }));
+  } catch (error) {
+    console.error(`Fehler bei Personen von Reise ${reise_id}:`, error);
+    throw error;
+  }
+}
+
+/**
+ * Löscht eine bestimmte Reise aus der Sammlung "reisen" anhand ihrer ID.
+ */
 export async function deleteReise(id) {
+  const database = await connectToDatabase();
+  const collection = database.collection('reisen');
   try {
-    await connectToDatabase(); // Ensure the database connection is established
-    const collection = db.collection('reisen');
-    const result = await collection.deleteOne({ _id: new ObjectId(id) });
-    console.log('Deleted reise:', result);
-    return result;
+    await collection.deleteOne({ _id: new ObjectId(id) });
+    console.log(`Reise ${id} gelöscht.`);
   } catch (error) {
-    console.error('Error deleting reise:', error);
+    console.error('Fehler beim Löschen der Reise:', error);
+    throw error;
+  }
+}
+
+/**
+ * Löscht eine bestimmte Person aus der Sammlung "personen" anhand ihrer ID.
+ */
+export async function deletePerson(id) {
+  const database = await connectToDatabase();
+  const collection = database.collection('personen');
+  try {
+    await collection.deleteOne({ _id: new ObjectId(id) });
+    console.log(`Person ${id} gelöscht.`);
+  } catch (error) {
+    console.error('Fehler beim Löschen der Person:', error);
     throw error;
   }
 }

@@ -1,28 +1,29 @@
-import { getReise } from '$lib/db.js';  // Importiere die Funktion zum Laden der Reise aus der DB
+// Importiere Datenbankfunktionen für Reisen und Personen
+import { getReise, getPersonenByReiseId } from '$lib/db.js';
 
+// SvelteKit Ladefunktion, wird automatisch beim Seitenaufruf ausgeführt
 export async function load({ params }) {
-  const reiseId = params.reise_id;  // Hole die Reise-ID aus der URL
-
-  console.log('Loading reise with ID:', reiseId);  // Überprüfe, ob die Reise-ID korrekt abgerufen wird
-
   try {
-    const reise = await getReise(reiseId);  // Hole die spezifische Reise
+    // Hole Reisedaten anhand der URL-Parameter (reise_id)
+    const reise = await getReise(params.reise_id);
+    
+    // Wenn keine Reise gefunden wurde, gib 404-Fehler zurück
     if (!reise) {
-      console.log('Reise not found with ID:', reiseId);  // Loggen, falls die Reise nicht gefunden wird
       return {
         status: 404,
         error: new Error('Reise nicht gefunden'),
       };
     }
-    console.log('Reise found:', reise);  // Logge die gefundenen Reise-Daten
-    return {
-      props: {
-        reise,  // Übergabe der Reise-Daten an die Seite
-      }
-    };
+
+    // Hole alle Teilnehmer für diese Reise
+    const personen = await getPersonenByReiseId(params.reise_id);
+
+    // Gib Reise- und Personendaten an die Frontend-Komponente zurück
+    return { reise, personen };
+
   } catch (error) {
-    console.error('Fehler beim Laden der Reise:', error.message);
-    console.error('Stack Trace:', error.stack);  // Logge den Stack Trace für detailliertere Fehleranalyse
+    // Bei Datenbankfehlern: Logge Fehler und gib 500er Status zurück
+    console.error('Error loading reise:', error.message);
     return {
       status: 500,
       error: new Error('Interner Serverfehler'),

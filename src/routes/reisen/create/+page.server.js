@@ -1,39 +1,44 @@
-import { connectToDatabase, createReise } from '$lib/db';
-import fs from 'fs';
-import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
+// Importiere benötigte Module
+import { createReise } from '$lib/db.js';  // Funktion zum Erstellen einer Reise in der Datenbank
+import fs from 'fs';                       // Für Dateisystem-Operationen
+import path from 'path';                   // Für Pfad-Operationen
+import { v4 as uuidv4 } from 'uuid';      // Generiert eindeutige IDs
 
 export const actions = {
+  // Server-Action zum Erstellen einer neuen Reise
   create: async ({ request }) => {
     try {
+      // Hole die Formulardaten vom Request
       const data = await request.formData();
       const image = data.get('image');
 
+      // Wenn ein Bild hochgeladen wurde
       if (image && image.size > 0) {
+        // Generiere einen eindeutigen Dateinamen mit UUID
         const imageName = `${uuidv4()}-${image.name}`;
         const imagePath = path.join('static/images', imageName);
 
-        // Save the image to the static/images directory
+        // Konvertiere das Bild in einen Buffer und speichere es
         const buffer = Buffer.from(await image.arrayBuffer());
         fs.writeFileSync(imagePath, buffer);
 
+        // Erstelle das Reise-Objekt mit allen Formulardaten
         let reise = {
-          title: data.get('title'),
-          destination: data.get('destination'),
-          start_date: data.get('start_date'),
-          end_date: data.get('end_date'),
-          budget: parseFloat(data.get('budget')),
-          description: data.get('description'),
-          image: `/images/${imageName}`
+          title: data.get('title'),           // Titel der Reise
+          destination: data.get('destination'),// Reiseziel
+          start_date: data.get('start_date'), // Startdatum
+          end_date: data.get('end_date'),     // Enddatum
+          budget: parseFloat(data.get('budget')), // Budget als Nummer
+          description: data.get('description'),   // Beschreibung
+          image: `/images/${imageName}`          // Pfad zum gespeicherten Bild
         };
 
         console.log('Reise to be added:', reise);
 
-        const db = await connectToDatabase();
-        const result = await createReise(reise);
+        // Speichere die Reise in der Datenbank
+        await createReise(reise);
 
-        console.log('Database insert result:', result);
-
+        // Rückmeldung
         return { success: true };
       } else {
         throw new Error('Image upload failed');
