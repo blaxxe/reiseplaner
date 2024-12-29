@@ -7,6 +7,8 @@
     </div>
   </div>
   
+  <a class="navbar-brand" href="/">Reiseplaner</a>
+  
   <style>
     .welcome-text {
       padding-top: 200px;
@@ -34,4 +36,3 @@
       border-radius: 12px;
     }
   </style>
-  

@@ -16,7 +16,9 @@ export async function load({ params }) {
     }
     console.log('Reise found:', reise);  // Logge die gefundenen Reise-Daten
     return {
-      reise,  // Übergabe der Reise-Daten an die Seite
+      props: {
+        reise,  // Übergabe der Reise-Daten an die Seite
+      }
     };
   } catch (error) {
     console.error('Fehler beim Laden der Reise:', error.message);
