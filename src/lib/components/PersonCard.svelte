@@ -6,7 +6,7 @@
 <script>
   // Person-Objekt mit: profile_image, name, email und reisen Array
   export let person;
-</script>
+</script> 
 
 <!-- Benutzer Profil Sektion -->
 <img src={person.profile_image} alt={`Profilbild von ${person.name}`} class="profile-image" />
