@@ -581,6 +581,9 @@ select[multiple] option:last-child {
   margin: 0 auto;
 }
 .person-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;  /* Set minimum height */
   background: var(--background);
   border-radius: 1rem;
   overflow: hidden;
@@ -588,6 +591,7 @@ select[multiple] option:last-child {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  height: 100%;
   transition: all 0.3s ease;
 }
 .person-card:hover {
@@ -605,16 +609,26 @@ select[multiple] option:last-child {
 }
 .person-card .actions {
   margin-top: auto;
-  display: flex;
-  gap: 1rem;
+  display: block; 
+  padding: 0; 
 }
 .person-card .btn {
-  flex: 1;
-  margin-top: auto;
-  width: 100%;
+  margin-top: auto;  
+  margin: 1rem;
+  width: calc(100% - 2rem); 
+  text-align: center;
+  height: auto; 
+  padding: 0.75rem 1.5rem;
+  display: block;
 }
 .person-card .delete-btn {
+  margin-top: auto;  
   background-color: var(--danger);
+}
+.person-card .delete-btn:hover {
+  background-color: var(--danger);
+  box-shadow: 0 8px 15px rgba(239, 68, 68, 0.2);
+  filter: brightness(0.9);
 }
 .person-card img {
   width: 100%;
@@ -628,6 +642,11 @@ select[multiple] option:last-child {
   transform: scale(1.02);
 }
 
+.person-card .content {
+  flex: 1;  /* Allow content to grow */
+  display: flex;
+  flex-direction: column;
+}
 
 /* Form containers */
 .new-person-form,
@@ -765,4 +784,3 @@ select[multiple] option:last-child {
       gap: 1rem;
     }
   }
-

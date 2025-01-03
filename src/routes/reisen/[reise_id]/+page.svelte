@@ -13,6 +13,7 @@
     <p><strong>Destination:</strong> {data.reise.destination}</p>
     <p><strong>Startdatum:</strong> {data.reise.start_date}</p>
     <p><strong>Enddatum:</strong> {data.reise.end_date}</p>
+    <p><strong>Budget:</strong> {data.reise.budget} CHF</p> 
     <p>{data.reise.description}</p>
 
     <!-- Abschnitt für Teilnehmerliste -->
