@@ -6,7 +6,6 @@
 <script>
   // Form-Handling Props und Status-Variablen
   export let form;
-  let showModal = false;
   let showSuccess = false;
 
   // Erfolgs-Message Handling (verschwindet nach 5 Sekunden)
@@ -17,10 +16,7 @@
     }, 5000);
   }
 
-  // Modal-Steuerung (aktuell ungenutzt)
-  function closeModal() {
-    showModal = false;
-  }
+
 </script>
 
 <!-- Navigation zurück zur Übersicht -->

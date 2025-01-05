@@ -1,8 +1,6 @@
 // Importiere benötigte Module
 import { createReise } from '$lib/db.js';  // Funktion zum Erstellen einer Reise in der Datenbank
-import fs from 'fs';                       // Für Dateisystem-Operationen
-import path from 'path';                   // Für Pfad-Operationen
-import { v4 as uuidv4 } from 'uuid';      // Generiert eindeutige IDs
+
 
 export const actions = {
   // Server-Action zum Erstellen einer neuen Reise

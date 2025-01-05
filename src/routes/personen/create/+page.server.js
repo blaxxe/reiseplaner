@@ -1,9 +1,6 @@
 // Import database operations for travels and person management
 import { getReisen, createPerson } from "$lib/db.js";
-// Import file system operations for profile image handling
-import { writeFileSync } from "fs";
-// Import UUID generator for unique profile image names
-import { randomUUID } from "crypto";
+
 
 // Load function to fetch all available travels
 export async function load() {

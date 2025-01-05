@@ -34,8 +34,8 @@
 
 <a class="btn" href="/personen" role="button">Zurück</a>
 
-<!-- Gleicher Aufbau und Klassen wie beim Reise-Form -->
-<div class="new-reise-form">
+
+<div class="new-person-form">
   <h1>Neue Person hinzufügen</h1>
 
   <form method="POST" action="?/create" enctype="multipart/form-data">

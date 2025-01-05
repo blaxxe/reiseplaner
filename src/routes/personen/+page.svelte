@@ -42,7 +42,7 @@
         <!-- Zeige PersonCard-Komponente -->
         <PersonCard {person} />
         <!-- Lösch-Button für jede Person -->
-        <button class="btn delete-btn" onclick={() => deletePerson(person._id)}>
+        <button class="btn delete-btn" on:click={() => deletePerson(person._id)}>
           Löschen
         </button>
       </div>
