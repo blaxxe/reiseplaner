@@ -9,8 +9,6 @@
 {#if person}
   <!-- Hauptcontainer für Personendetails -->
   <div class="person-details">
-    <!-- Profilbild der Person -->
-    <img src={person.profile_image} alt="{person.name}" class="profile-image" />
     <!-- Name der Person als Überschrift -->
     <h1>{person.name}</h1>
     <!-- Kontaktinformationen -->

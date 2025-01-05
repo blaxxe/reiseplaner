@@ -28,32 +28,13 @@ export const actions = {
     try {
       // Extract form data from the request
       const data = await request.formData();
-      // Get uploaded profile image if present
-      const file = data.get("profile_image");
-
-      // Set default profile image path or generate new one for uploads
-      let fileName = "/images/default-profile.jpg";
-      if (file && file.size > 0) {
-        // Extract file extension and create unique filename
-        const ext = file.name.split(".").pop();
-        fileName = `/images/${randomUUID()}.${ext}`;
-        // Ensure static directory exists
-        const filePath = `static${fileName}`;
-        try {
-          writeFileSync(filePath, Buffer.from(await file.arrayBuffer()));
-        } catch (err) {
-          console.error("Error writing file:", err);
-          return { success: false, error: "Failed to save image" };
-        }
-      }
 
       // Create person object with form data
       const person = {
         name: data.get("name"),
         email: data.get("email"),
-        profile_image: fileName, // Store image path
-        // Get all selected values
         reise_ids: data.getAll("reise_ids"), // Store associated travel IDs
+        image: data.get("image") // Add image handling
       };
 
       // Save new person to database

@@ -58,16 +58,8 @@
     </div>
 
     <div>
-      <!-- File upload field for profile image -->
-      <label for="profile_image">Profilbild (Datei):</label>
-      <input
-        name="profile_image"
-        id="profile_image"
-        class="form-control"
-        type="file"
-        accept="image/*"
-        required
-      />
+      <label for="image">Profilbild:</label>
+      <input name="image" id="image" type="file" accept="image/*" />
     </div>
 
     <div>
@@ -100,4 +92,3 @@
     </div>
   {/if}
 </div>
-

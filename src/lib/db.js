@@ -87,6 +87,14 @@ export async function createPerson(person) {
   const database = await connectToDatabase();
   const collection = database.collection('personen');
   try {
+    // Handle image as Base64 string
+    if (person.image instanceof File) {
+      const imageType = person.image.type;
+      const arrayBuffer = await person.image.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      person.image = `data:${imageType};base64,${buffer.toString('base64')}`;
+    }
+
     const result = await collection.insertOne(person);
     console.log(`Person erstellt (ID: ${result.insertedId}).`);
     return result;
@@ -106,6 +114,10 @@ export async function getPerson(id) {
     const person = await collection.findOne({ _id: new ObjectId(id) });
     if (person) {
       person._id = person._id.toString();
+      // Create data URL from Base64 image
+      if (person.image && person.imageType) {
+        person.image = `data:${person.imageType};base64,${person.image}`;
+      }
       person.reisen = [];
       for (const reiseId of person.reise_ids || []) {
         try {

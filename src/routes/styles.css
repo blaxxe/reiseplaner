@@ -648,6 +648,14 @@ select[multiple] option:last-child {
   flex-direction: column;
 }
 
+.profile-image {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
 /* Form containers */
 .new-person-form,
 .new-reise-form {
