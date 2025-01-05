@@ -12,43 +12,22 @@ export const actions = {
       const data = await request.formData();
       const image = data.get('image');
 
-      // Wenn ein Bild hochgeladen wurde
-      if (image && image.size > 0) {
-        // Generiere einen eindeutigen Dateinamen mit UUID
-        const imageName = `${uuidv4()}-${image.name}`;
-        const imagePath = path.join('static/images', imageName);
+      // Create reise object with image file
+      const reise = {
+        title: data.get('title'),
+        destination: data.get('destination'),
+        start_date: data.get('start_date'),
+        end_date: data.get('end_date'),
+        budget: parseFloat(data.get('budget')),
+        description: data.get('description'),
+        image: image // Pass the entire File object
+      };
 
-        // Konvertiere das Bild in einen Buffer und speichere es
-        const buffer = Buffer.from(await image.arrayBuffer());
-        fs.writeFileSync(imagePath, buffer);
-
-        // Erstelle das Reise-Objekt mit allen Formulardaten
-        let reise = {
-          title: data.get('title'),           // Titel der Reise
-          destination: data.get('destination'),// Reiseziel
-          start_date: data.get('start_date'), // Startdatum
-          end_date: data.get('end_date'),     // Enddatum
-          budget: parseFloat(data.get('budget')), // Budget als Nummer
-          description: data.get('description'),   // Beschreibung
-          image: `/images/${imageName}`          // Pfad zum gespeicherten Bild
-        };
-
-        console.log('Reise to be added:', reise);
-
-        // Speichere die Reise in der Datenbank
-        await createReise(reise);
-
-        // Rückmeldung
-        return { success: true };
-      } else {
-        throw new Error('Image upload failed');
-      }
+      await createReise(reise);
+      return { success: true };
     } catch (error) {
       console.error('Error creating reise:', error);
-      return {
-        status: 500,
-        error: 'Interner Serverfehler',
-      };
+      return { success: false, error: error.message };
     }
-  },
+  }
 };

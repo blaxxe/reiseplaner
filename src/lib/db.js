@@ -31,6 +31,14 @@ export async function createReise(reise) {
   const database = await connectToDatabase();
   const collection = database.collection('reisen');
   try {
+    // Handle image as Base64 string
+    if (reise.image) {
+      reise.imageType = reise.image.type;
+      const arrayBuffer = await reise.image.arrayBuffer();
+      const buffer = Buffer.from(arrayBuffer);
+      reise.image = buffer.toString('base64');
+    }
+
     const result = await collection.insertOne(reise);
     console.log(`Reise erstellt (ID: ${result.insertedId}).`);
     return result;
@@ -123,7 +131,13 @@ export async function getReise(id) {
   const collection = database.collection('reisen');
   try {
     const reise = await collection.findOne({ _id: new ObjectId(id) });
-    if (reise) reise._id = reise._id.toString();
+    if (reise) {
+      reise._id = reise._id.toString();
+      // Create data URL from Base64 image
+      if (reise.image && reise.imageType) {
+        reise.image = `data:${reise.imageType};base64,${reise.image}`;
+      }
+    }
     return reise;
   } catch (error) {
     console.error(`Fehler bei Reise ${id}:`, error);
@@ -139,7 +153,12 @@ export async function getReisen() {
   const collection = database.collection('reisen');
   try {
     const reisen = await collection.find({}).toArray();
-    return reisen.map((r) => ({ ...r, _id: r._id.toString() }));
+    return reisen.map((r) => ({
+      ...r,
+      _id: r._id.toString(),
+      // Convert Base64 to data URL if image exists
+      image: r.image && r.imageType ? `data:${r.imageType};base64,${r.image}` : r.image
+    }));
   } catch (error) {
     console.error('Fehler beim Abrufen der Reisen:', error);
     throw error;
