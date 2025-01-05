@@ -1,29 +1,28 @@
+<!-- create/+page.svelte: Neues Personen-Formular, gleiche Struktur wie "Reise" -->
 <script>
-  // Import onMount lifecycle function from Svelte
   import { onMount } from "svelte";
-  // Export data and form props that can be passed to this component
   export let data;
   export let form;
-  // Initialize empty array for storing trips
-  let reisen = [];
-  // Initialize success message flag
+
+  // Personen-Feld
   let showSuccess = false;
+  let reisen = [];
   let selectedReisen = [];
 
-  // When component mounts, populate reisen array with data from props
+  // Daten laden
   onMount(() => {
     reisen = data.reisen;
   });
 
-  // Reactive statement: when form.success changes, show success message
-  // and hide it after 5 seconds using setTimeout
+  // Erfolgsmeldung
   $: if (form?.success) {
     showSuccess = true;
     setTimeout(() => {
       showSuccess = false;
-    }, 5000); // Hide message after 5 seconds
+    }, 5000);
   }
 
+  // Reisen-Auswahl togglen
   function toggleSelection(reiseId) {
     if (selectedReisen.includes(reiseId)) {
       selectedReisen = selectedReisen.filter(id => id !== reiseId);
@@ -33,43 +32,61 @@
   }
 </script>
 
-<!-- Back button that links to persons overview page -->
 <a class="btn" href="/personen" role="button">Zurück</a>
-<!-- Main container for the new person form -->
-<div class="new-person-form">
+
+<!-- Gleicher Aufbau und Klassen wie beim Reise-Form -->
+<div class="new-reise-form">
   <h1>Neue Person hinzufügen</h1>
 
-  <!-- Form that submits to create action endpoint and supports file upload -->
-  <form 
-    method="POST" 
-    action="?/create" 
-    enctype="multipart/form-data"
-  >
-    <div>
-      <!-- Input field for person's name -->
-      <label for="name">Name:</label>
-      <input name="name" type="text" required />
+  <form method="POST" action="?/create" enctype="multipart/form-data">
+    <!-- Name -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input
+        name="name"
+        id="name"
+        class="form-control"
+        type="text"
+        required
+      />
     </div>
 
-    <div>
-      <!-- Input field for person's email -->
-      <label for="email">Email:</label>
-      <input name="email" type="email" required />
+    <!-- Email -->
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        name="email"
+        id="email"
+        class="form-control"
+        type="email"
+        required
+      />
     </div>
 
-    <div>
-      <label for="image">Profilbild:</label>
-      <input name="image" id="image" type="file" accept="image/*" />
+    <!-- Profilbild -->
+    <div class="mb-3">
+      <label for="image" class="form-label">Profilbild</label>
+      <input
+        name="image"
+        id="image"
+        class="form-control"
+        type="file"
+        accept="image/*"
+      />
     </div>
 
-    <div>
-      <label for="reise">Reisen:</label>
+    <!-- Unverändertes Reisen-Select (kurze Kommentare) -->
+    <div class="mb-3">
+      <label for="reise" class="form-label">Reisen:</label>
+      <!-- Custom Select -->
       <div class="custom-select">
         {#each reisen as reise}
-          <div 
+          <div
             class="option {selectedReisen.includes(reise._id) ? 'selected' : ''}"
             on:click={() => toggleSelection(reise._id)}
-            on:keydown={(e) => e.key === 'Enter' || e.key === ' ' ? toggleSelection(reise._id) : null}
+            on:keydown={(e) =>
+              e.key === 'Enter' || e.key === ' ' ? toggleSelection(reise._id) : null
+            }
             role="button"
             tabindex="0"
           >
@@ -77,15 +94,16 @@
           </div>
         {/each}
       </div>
+      <!-- Hidden Inputs -->
       {#each selectedReisen as reiseId}
-        <input type="hidden" name="reise_ids" value={reiseId}>
+        <input type="hidden" name="reise_ids" value={reiseId} />
       {/each}
     </div>
 
-    <!-- Submit button -->
-    <button type="submit" class="btn">Hinzufügen</button>
+    <!-- Button wie im Reise-Form -->
+    <button type="submit" class="btn btn-primary">Person hinzufügen</button>
   </form>
-  <!-- Conditional rendering of success message -->
+
   {#if showSuccess}
     <div class="success-message">
       Person wurde erfolgreich hinzugefügt!
