@@ -4,7 +4,6 @@
 -->
 
 <script>
-  // Reise-Objekt mit: image, title, destination und _id
   export let reise;
 </script>
 
@@ -12,4 +11,5 @@
 <img src={reise.image} alt={reise.title} class="reise-image" />
 <h2>{reise.title}</h2>
 <p>{reise.destination}</p>
-<a href={`/reisen/${reise._id}`} class="btn">Details</a>
+<p>Startdatum: {reise.start_date}</p>
+<p>Enddatum: {reise.end_date}</p>

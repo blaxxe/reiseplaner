@@ -61,6 +61,7 @@
                         <a 
                             href={`/reisen/${reise._id}`}
                             class="event"
+                            title={reise.title}
                             on:click={(e) => navigateToReise(e, reise._id)}
                         >
                             {reise.title}

@@ -8,9 +8,9 @@
 </script> 
 
 <!-- Benutzer Profil Sektion -->
-{#if person.image}
+
   <img src={person.image} alt={person.name} class="profile-image" />
-{/if}
+
 
 <h2>{person.name}</h2>
 <p><strong>E-Mail:</strong> {person.email}</p>
