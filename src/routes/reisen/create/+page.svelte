@@ -4,11 +4,20 @@
 -->
 
 <script>
-  // Form-Handling Props und Status-Variablen
+  import { onMount } from "svelte";
+  export let data;
   export let form;
+  
   let showSuccess = false;
+  let personen = [];
+  let selectedTeilnehmer = [];
 
-  // Erfolgs-Message Handling (verschwindet nach 5 Sekunden)
+  // Load data
+  onMount(() => {
+    personen = data.personen;
+  });
+
+  // Success message handling
   $: if (form?.success) {
     showSuccess = true;
     setTimeout(() => {
@@ -16,7 +25,14 @@
     }, 5000);
   }
 
-
+  // Toggle teilnehmer selection
+  function toggleSelection(personId) {
+    if (selectedTeilnehmer.includes(personId)) {
+      selectedTeilnehmer = selectedTeilnehmer.filter(id => id !== personId);
+    } else {
+      selectedTeilnehmer = [...selectedTeilnehmer, personId];
+    }
+  }
 </script>
 
 <!-- Navigation zurück zur Übersicht -->
@@ -66,6 +82,30 @@
     <div class="mb-3">
       <label for="image" class="form-label">Bild</label>
       <input name="image" id="image" class="form-control" type="file" accept="image/*" required />
+    </div>
+
+    <!-- Neuer Teilnehmer-Bereich -->
+    <div class="mb-3">
+      <label for="teilnehmer" class="form-label">Teilnehmer:</label>
+      <div class="custom-select">
+        {#each personen as person}
+          <div
+            class="option {selectedTeilnehmer.includes(person._id) ? 'selected' : ''}"
+            on:click={() => toggleSelection(person._id)}
+            on:keydown={(e) =>
+              e.key === 'Enter' || e.key === ' ' ? toggleSelection(person._id) : null
+            }
+            role="button"
+            tabindex="0"
+          >
+            {person.name}
+          </div>
+        {/each}
+      </div>
+      <!-- Hidden inputs for selected teilnehmer -->
+      {#each selectedTeilnehmer as teilnehmerId}
+        <input type="hidden" name="teilnehmer_ids" value={teilnehmerId} />
+      {/each}
     </div>
 
     <!-- Submit-Button -->

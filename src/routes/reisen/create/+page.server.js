@@ -1,6 +1,19 @@
 // Importiere benötigte Module
-import { createReise } from '$lib/db.js';  // Funktion zum Erstellen einer Reise in der Datenbank
+import { createReise, getPersonen } from '$lib/db.js';  // Funktion zum Erstellen einer Reise in der Datenbank
 
+// Load function to fetch all available persons
+export async function load() {
+  try {
+    const personen = await getPersonen();
+    return { personen };
+  } catch (error) {
+    console.error("Error loading personen:", error);
+    return {
+      status: 500,
+      error: new Error("Interner Serverfehler"),
+    };
+  }
+}
 
 export const actions = {
   // Server-Action zum Erstellen einer neuen Reise
@@ -18,7 +31,8 @@ export const actions = {
         end_date: data.get('end_date'),
         budget: parseFloat(data.get('budget')),
         description: data.get('description'),
-        image: image // Pass the entire File object
+        image: image, // Pass the entire File object
+        teilnehmer_ids: data.getAll('teilnehmer_ids') // Add teilnehmer_ids
       };
 
       await createReise(reise);

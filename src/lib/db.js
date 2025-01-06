@@ -29,7 +29,9 @@ export async function connectToDatabase() {
  */
 export async function createReise(reise) {
   const database = await connectToDatabase();
-  const collection = database.collection('reisen');
+  const reisenCollection = database.collection('reisen');
+  const personenCollection = database.collection('personen');
+  
   try {
     // Handle image as Base64 string
     if (reise.image) {
@@ -39,8 +41,21 @@ export async function createReise(reise) {
       reise.image = buffer.toString('base64');
     }
 
-    const result = await collection.insertOne(reise);
-    console.log(`Reise erstellt (ID: ${result.insertedId}).`);
+    // Insert the reise document
+    const result = await reisenCollection.insertOne(reise);
+    const reiseId = result.insertedId.toString();
+
+    // Update each person with the reise_id
+    if (reise.teilnehmer_ids && reise.teilnehmer_ids.length > 0) {
+      await Promise.all(reise.teilnehmer_ids.map(async (personId) => {
+        await personenCollection.updateOne(
+          { _id: new ObjectId(personId) },
+          { $addToSet: { reise_ids: reiseId } }
+        );
+      }));
+    }
+
+    console.log(`Reise erstellt (ID: ${reiseId}).`);
     return result;
   } catch (error) {
     console.error('Fehler beim Erstellen der Reise:', error);
@@ -140,14 +155,30 @@ export async function getPerson(id) {
  */
 export async function getReise(id) {
   const database = await connectToDatabase();
-  const collection = database.collection('reisen');
+  const reisenCollection = database.collection('reisen');
+  const personenCollection = database.collection('personen');
+
   try {
-    const reise = await collection.findOne({ _id: new ObjectId(id) });
+    const reise = await reisenCollection.findOne({ _id: new ObjectId(id) });
     if (reise) {
       reise._id = reise._id.toString();
+      
       // Create data URL from Base64 image
       if (reise.image && reise.imageType) {
         reise.image = `data:${reise.imageType};base64,${reise.image}`;
+      }
+
+      // Get participants if teilnehmer_ids exist
+      if (reise.teilnehmer_ids && reise.teilnehmer_ids.length > 0) {
+        reise.teilnehmer = await personenCollection
+          .find({ _id: { $in: reise.teilnehmer_ids.map(id => new ObjectId(id)) } })
+          .toArray();
+        
+        // Convert ObjectIds to strings
+        reise.teilnehmer = reise.teilnehmer.map(person => ({
+          ...person,
+          _id: person._id.toString()
+        }));
       }
     }
     return reise;
