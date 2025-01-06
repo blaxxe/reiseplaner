@@ -3,7 +3,7 @@ import { getPersonen, createPerson, deletePerson } from "$lib/db.js";
 // Lade alle Personen aus der Datenbank
 export async function load() {
   try {
-    // Hole alle Personen
+    // Lade alle Personen 
     const personen = await getPersonen();
 
     // Prüfe ob Personen gefunden wurden
@@ -14,7 +14,7 @@ export async function load() {
       };
     }
 
-    // Stelle sicher, dass reise_ids immer ein Array ist
+    // sicherstellen, dass reise_ids immer ein Array ist
     const serializablePersonen = personen.map(person => ({
       ...person,
       reise_ids: Array.isArray(person.reise_ids) ? person.reise_ids : []

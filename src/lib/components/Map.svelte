@@ -1,24 +1,28 @@
 <script>
+  // importieren der Funktion onMount (Code ausführen, wenn Komponente gerendert wird)
   import { onMount } from 'svelte';
-  
-  // Props: Array of travel destinations
+
+  //prop reisen mit leerem Array übergeben
   export let reisen = [];
-  
-  // OpenCage Geocoding API key
+
+  //API-Key für OpenCage Geocoding API
   const apiKey = 'b1ced8cdd89e4934a08ccd9662eab6bf';
-  
-  // Leaflet map instance
+
+  //Map-Objekt
   let map;
 
+  //Code ausführen, wenn Komponente im DOM verfügabr ist
   onMount(async () => {
-    // Check if code runs in browser environment
+
+    //prüfen ob Code im Browser ausgeführt wird
     if (typeof window !== 'undefined') {
-      // Dynamic imports for better performance
+
+      //importieren von Leaflet und OpenCage Geocoding API
       const L = await import('leaflet');
       const opencage = (await import('opencage-api-client')).default;
       await import('leaflet/dist/leaflet.css');
 
-         // Fix for marker icons
+      //Marker-Icons von Leaflet anpassen
          delete L.Icon.Default.prototype._getIconUrl;
       L.Icon.Default.mergeOptions({
         iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
@@ -26,28 +30,29 @@
         shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
       });
 
-      // Initialize map centered at [40, 0] with zoom level 2
+      //Map-Objekt erstellen und Kartenausschnitt festlegen
       map = L.map('map').setView([40, 0], 2);
 
-      // Add OpenStreetMap tile layer
+      //OpenStreetMap als Kartenlayer hinzufügen
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(map);
 
-      // Add markers for each travel destination
+      //Reisen durchlaufen und Marker für Reiseziele hinzufügen
       reisen.forEach(reise => {
-        // Geocode the destination address to coordinates
+
+        //Geocoding für Reiseziel durchführen
         opencage
           .geocode({ q: reise.destination, key: apiKey })
           .then(response => {
             if (response.results.length > 0) {
               const { lat, lng } = response.results[0].geometry;
               
-              // Create and add marker with popup
+              //Marker für Reiseziel hinzufügen
               const marker = L.marker([lat, lng]).addTo(map);
               marker.bindPopup(`<b>${reise.title}</b><br>${reise.destination}`);
               
-              // Add click handler for navigation
+              //Beim Klick auf Marker zur Detailseite der Reise weiterleiten
               marker.on('click', () => {
                 window.location.href = `/reisen/${reise._id}`;
               });
@@ -61,6 +66,5 @@
   });
 </script>
 
-<!-- Map container -->
 <div id="map"></div>
 

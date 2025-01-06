@@ -1,7 +1,6 @@
-// Importiere benötigte Module
 import { createReise, getPersonen } from '$lib/db.js';  // Funktion zum Erstellen einer Reise in der Datenbank
 
-// Load function to fetch all available persons
+// laden der Personen-Daten
 export async function load() {
   try {
     const personen = await getPersonen();
@@ -23,7 +22,7 @@ export const actions = {
       const data = await request.formData();
       const image = data.get('image');
 
-      // Create reise object with image file
+      // reise-Objekt erstellen
       const reise = {
         title: data.get('title'),
         destination: data.get('destination'),

@@ -1,8 +1,3 @@
-<!--
-  create/+page.svelte - Formular zum Erstellen einer neuen Reise
-  Enthält Eingabefelder für alle Reisedetails und Erfolgsbestätigung
--->
-
 <script>
   import { onMount } from "svelte";
   export let data;
@@ -12,12 +7,12 @@
   let personen = [];
   let selectedTeilnehmer = [];
 
-  // Load data
+  // Personen laden
   onMount(() => {
     personen = data.personen;
   });
 
-  // Success message handling
+  // Erfolgs-Message anzeigen
   $: if (form?.success) {
     showSuccess = true;
     setTimeout(() => {
@@ -25,7 +20,7 @@
     }, 5000);
   }
 
-  // Toggle teilnehmer selection
+  // Teilnehmer-Auswahl
   function toggleSelection(personId) {
     if (selectedTeilnehmer.includes(personId)) {
       selectedTeilnehmer = selectedTeilnehmer.filter(id => id !== personId);
@@ -35,20 +30,20 @@
   }
 </script>
 
-<!-- Navigation zurück zur Übersicht -->
+<!-- Zurück Personen -->
 <a class="btn" href="/reisen" role="button">Zurück</a>
 
 <!-- Reise-Erstellungsformular -->
 <div class="new-reise-form">
   <h1>Neue Reise hinzufügen</h1>
   <form method="POST" action="?/create" enctype="multipart/form-data">
-    <!-- Basis-Informationen -->
+    <!-- Titel -->
     <div class="mb-3">
       <label for="title" class="form-label">Titel</label>
       <input name="title" id="title" class="form-control" type="text" required />
     </div>
     
-    <!-- Reiseziel -->
+    <!-- Destination -->
     <div class="mb-3">
       <label for="destination" class="form-label">Ziel</label>
       <input name="destination" id="destination" class="form-control" type="text" required />
@@ -102,13 +97,13 @@
           </div>
         {/each}
       </div>
-      <!-- Hidden inputs for selected teilnehmer -->
+      <!-- Hidden inputs für teilnehmer -->
       {#each selectedTeilnehmer as teilnehmerId}
         <input type="hidden" name="teilnehmer_ids" value={teilnehmerId} />
       {/each}
     </div>
 
-    <!-- Submit-Button -->
+    <!-- Hinzufügen -->
     <button type="submit" class="btn btn-primary">Reise hinzufügen</button>
   </form>
 

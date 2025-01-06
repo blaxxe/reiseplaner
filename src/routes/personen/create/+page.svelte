@@ -1,10 +1,8 @@
-<!-- create/+page.svelte: Neues Personen-Formular, gleiche Struktur wie "Reise" -->
 <script>
   import { onMount } from "svelte";
   export let data;
   export let form;
 
-  // Personen-Feld
   let showSuccess = false;
   let reisen = [];
   let selectedReisen = [];
@@ -22,7 +20,7 @@
     }, 5000);
   }
 
-  // Reisen-Auswahl togglen
+  // Reisen-Auswahl togglen für Custom Select
   function toggleSelection(reiseId) {
     if (selectedReisen.includes(reiseId)) {
       selectedReisen = selectedReisen.filter(id => id !== reiseId);
@@ -32,6 +30,7 @@
   }
 </script>
 
+<!--Zurück Button-->
 <a class="btn" href="/personen" role="button">Zurück</a>
 
 
@@ -75,7 +74,7 @@
       />
     </div>
 
-    <!-- Unverändertes Reisen-Select (kurze Kommentare) -->
+    <!-- Reisen -->
     <div class="mb-3">
       <label for="reise" class="form-label">Reisen:</label>
       <!-- Custom Select -->
@@ -100,10 +99,11 @@
       {/each}
     </div>
 
-    <!-- Button wie im Reise-Form -->
+    <!--Hinuzfügen Button -->
     <button type="submit" class="btn btn-primary">Person hinzufügen</button>
   </form>
 
+  <!-- Erfolgsmeldung -->
   {#if showSuccess}
     <div class="success-message">
       Person wurde erfolgreich hinzugefügt!

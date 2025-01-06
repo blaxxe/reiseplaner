@@ -1,9 +1,3 @@
-<!--
-  +layout.svelte - Hauptlayout-Komponente
-  Definiert das grundlegende Layout und Navigation für alle Seiten
-  Enthält: Navigation Bar und Container für Child-Komponenten
--->
-
 <script>
   import "./styles.css"; // Import der globalen Styles
   let { children } = $props(); // Props für Child-Komponenten Rendering

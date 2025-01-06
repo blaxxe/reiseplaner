@@ -1,13 +1,9 @@
-<!--
-  ReiseCard.svelte - Komponente zur Darstellung einer Reise-Vorschau
-  Zeigt Bild, Titel, Ziel und einen Details-Link für eine Reise an
--->
-
+<!--reise als prop verfügbar machen-->
 <script>
   export let reise;
 </script>
 
-<!-- Reise Vorschau Card -->
+<!-- Reise Card Inhalt -->
 <img src={reise.image} alt={reise.title} class="reise-image" />
 <h2>{reise.title}</h2>
 <p>{reise.destination}</p>

@@ -1,5 +1,5 @@
 <script>
-  // Importiere benötigte Komponenten und Funktionen
+  // Import der PersonCard-Komponente und der Navigation-Funktionen
   import PersonCard from "$lib/components/PersonCard.svelte";
   import { invalidateAll } from '$app/navigation';
   
@@ -8,14 +8,13 @@
 
   // Funktion zum Löschen einer Person
   async function deletePerson(id) {
-    // Sicherheitsabfrage vor dem Löschen
     if (confirm('Möchten Sie diese Person wirklich löschen?')) {
       try {
         // Erstelle FormData mit der Person-ID
         const form = new FormData();
         form.append('id', id);
         
-        // Sende DELETE-Request an den Server
+        // Sende delete Anfrage an den Server
         await fetch('?/delete', { method: 'POST', body: form });
         
         // Aktualisiere die Daten und lade die Seite neu

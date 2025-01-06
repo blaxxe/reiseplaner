@@ -1,16 +1,11 @@
-<!--
-  PersonCard.svelte - Komponente zur Anzeige von Benutzerinformationen
-  Zeigt Profilbild, Name, Email und zugehörige Reisen eines Benutzers an
--->
-
+<!--person als prop verfügbar machen-->
 <script>
   export let person;
-</script> 
+</script>
 
-<!-- Benutzer Profil Sektion -->
+<!-- PersonCard Inhalt -->
 
-  <img src={person.image} alt={person.name} class="profile-image" />
-
+<img src={person.image} alt={person.name} class="profile-image" />
 
 <h2>{person.name}</h2>
 <p><strong>E-Mail:</strong> {person.email}</p>

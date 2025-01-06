@@ -1,44 +1,41 @@
-<!--
-  reisen/+page.svelte - Reiseübersichtsseite
-  Zeigt alle Reisen an, ermöglicht Löschen und Kalenderansicht
--->
-
 <script>
   // SvelteKit Imports für Formularhandling und Navigation
-  import { enhance } from '$app/forms';
-  import { invalidateAll } from '$app/navigation';
+  import { enhance } from "$app/forms";
+  import { invalidateAll } from "$app/navigation";
   // Komponenten Imports
   import ReiseCard from "$lib/components/ReiseCard.svelte";
   import Calendar from "$lib/components/Calendar.svelte";
-  import { onMount } from 'svelte';
+  import { onMount } from "svelte";
 
   // Daten aus dem Server-Load
   export let data;
   let reisen = data.reisen;
   let showCalendar = false;
   let showFilterModal = false;
-  let searchTerm = '';
-  let startDate = '';
-  let endDate = '';
-  let selectedDestination = '';
+  let searchTerm = "";
+  let startDate = "";
+  let endDate = "";
+  let selectedDestination = "";
 
-  // Filter state
-  
+  // Destinationen für Filter auslesen
+  $: destinations = [...new Set(reisen.map((r) => r.destination))].sort();
 
-  // Get unique destinations
-  $: destinations = [...new Set(reisen.map(r => r.destination))].sort();
-
-  // Enhanced filter logic
-  $: filteredReisen = reisen.filter(reise => {
-    const searchMatch = !searchTerm || 
+  // Filtern der Reisen
+  $: filteredReisen = reisen.filter((reise) => {
+    // Suchbegriff Filter
+    const searchMatch =
+      !searchTerm ||
       reise.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       reise.destination?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       reise.description?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    const destinationMatch = !selectedDestination || 
-      reise.destination === selectedDestination;
+    // Destination Filter
+    const destinationMatch =
+      !selectedDestination || reise.destination === selectedDestination;
 
-    const dateMatch = (!startDate || new Date(reise.start_date) >= new Date(startDate)) &&
+    // Datum Filter
+    const dateMatch =
+      (!startDate || new Date(reise.start_date) >= new Date(startDate)) &&
       (!endDate || new Date(reise.end_date) <= new Date(endDate));
 
     return searchMatch && destinationMatch && dateMatch;
@@ -46,21 +43,20 @@
 
   // Löscht eine Reise nach Bestätigung
   async function deleteReise(id) {
-    if (confirm('Möchten Sie diese Reise wirklich löschen?')) {
+    if (confirm("Möchten Sie diese Reise wirklich löschen?")) {
       try {
         const form = new FormData();
-        form.append('id', id);
-        
-        const response = await fetch('?/delete', {
-          method: 'POST',
-          body: form
+        form.append("id", id);
+
+        const response = await fetch("?/delete", {
+          method: "POST",
+          body: form,
         });
 
         await invalidateAll();
         window.location.reload();
-        
       } catch (error) {
-        console.error('Delete Error:', error);
+        console.error("Delete Error:", error);
       }
     }
   }
@@ -70,13 +66,15 @@
     showCalendar = !showCalendar;
   }
 
+  // Filter zurücksetzen
   function resetFilters() {
-    searchTerm = '';
-    startDate = '';
-    endDate = '';
-    selectedDestination = '';
+    searchTerm = "";
+    startDate = "";
+    endDate = "";
+    selectedDestination = "";
   }
 
+  // Toggle für Filtermodal
   function toggleFilterModal() {
     showFilterModal = !showFilterModal;
   }
@@ -85,27 +83,25 @@
 <!-- Hauptcontainer -->
 <div class="reisen-container">
   <h1>Reiseübersicht</h1>
-  
-
 
   <!-- Aktionsbuttons -->
   <div class="reisen-actions">
     <a class="btn" href="/reisen/create">Neue Reise hinzufügen</a>
     <button class="btn" on:click={toggleCalendar}>
-      {showCalendar ? 'Kalender ausblenden' : 'Kalender anzeigen'}
+      {showCalendar ? "Kalender ausblenden" : "Kalender anzeigen"}
     </button>
     <button class="btn" on:click={toggleFilterModal}>
-      Filter {showFilterModal ? 'ausblenden' : 'anzeigen'}
+      Filter {showFilterModal ? "ausblenden" : "anzeigen"}
     </button>
   </div>
 
-  <!-- Add Filter Modal -->
+  <!-- Filter -->
   {#if showFilterModal}
     <div class="filter-modal">
       <div class="filter-content">
         <div class="filter-group">
           <label for="search">Suche:</label>
-          <input 
+          <input
             id="search"
             type="text"
             bind:value={searchTerm}
@@ -124,10 +120,20 @@
         </div>
 
         <div class="filter-group">
-          <label>Zeitraum:</label>
+          <label for="zeitraum">Zeitraum:</label>
           <div class="date-inputs">
-            <input type="date" bind:value={startDate} placeholder="Von" />
-            <input type="date" bind:value={endDate} placeholder="Bis" />
+            <input
+              id="zeitraum"
+              type="date"
+              bind:value={startDate}
+              placeholder="Von"
+            />
+            <input
+              id="zeitraum"
+              type="date"
+              bind:value={endDate}
+              placeholder="Bis"
+            />
           </div>
         </div>
 
@@ -135,24 +141,22 @@
           <button class="btn secondary" on:click={resetFilters}>
             Filter zurücksetzen
           </button>
-          <button class="btn" on:click={toggleFilterModal}>
-            Schließen
-          </button>
+          <button class="btn" on:click={toggleFilterModal}> Schließen </button>
         </div>
       </div>
     </div>
   {/if}
 
-  <!-- Optionale Kalenderansicht -->
+  <!--  Kalender -->
   {#if showCalendar}
-    <Calendar reisen={reisen} />
+    <Calendar {reisen} />
   {/if}
 
   <!-- Reisen Grid-Ansicht -->
   <div class="reisen-grid">
     {#each filteredReisen as reise}
       <div class="reise-card">
-        <ReiseCard reise={reise} />
+        <ReiseCard {reise} />
         <a href={`/reisen/${reise._id}`} class="btn">Details</a>
         <button class="btn delete-btn" on:click={() => deleteReise(reise._id)}>
           Löschen
@@ -161,4 +165,3 @@
     {/each}
   </div>
 </div>
-

@@ -1,7 +1,3 @@
-<!--
-  +page.svelte - Startseite des Reiseplaners
-  Zeigt Willkommensnachricht und Hauptnavigationsbuttons an
--->
 
 <!-- Container für Startseiten-Layout -->
 <div class="container startpage">

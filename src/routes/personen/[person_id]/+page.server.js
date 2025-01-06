@@ -1,4 +1,3 @@
-// Importiere benötigte Datenbankfunktionen und MongoDB ObjectId
 import { getPerson } from "$lib/db.js";
 import { ObjectId } from "mongodb";
 

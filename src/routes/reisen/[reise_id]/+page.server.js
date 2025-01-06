@@ -1,13 +1,11 @@
-// Importiere Datenbankfunktionen für Reisen und Personen
 import { getReise, getPersonenByReiseId } from '$lib/db.js';
 
-// SvelteKit Ladefunktion, wird automatisch beim Seitenaufruf ausgeführt
 export async function load({ params }) {
   try {
-    // Hole Reisedaten anhand der URL-Parameter (reise_id)
+    //  Reisedaten anhand der URL-Parameter (reise_id)
     const reise = await getReise(params.reise_id);
     
-    // Wenn keine Reise gefunden wurde, gib 404-Fehler zurück
+    //404 Fehler
     if (!reise) {
       return {
         status: 404,
@@ -15,10 +13,10 @@ export async function load({ params }) {
       };
     }
 
-    // Hole alle Teilnehmer für diese Reise
+    // alle Teilnehmer für diese Reise
     const personen = await getPersonenByReiseId(params.reise_id);
 
-    // Gib Reise- und Personendaten an die Frontend-Komponente zurück
+    // Reise- und Personendaten an die Frontend-Komponente zurück
     return { reise, personen };
 
   } catch (error) {

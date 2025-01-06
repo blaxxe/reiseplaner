@@ -1,12 +1,9 @@
-// Server-seitige Logik für die Reiseübersicht
-// Handhabt Laden und Löschen von Reisen
-
 import { getReisen, deleteReise } from '$lib/db.js';
 
 // Lädt alle Reisen beim Seitenaufruf
 export async function load() {
   try {
-    const reisen = await getReisen(); // Fetch all Reisen
+    const reisen = await getReisen();
     if (!reisen || reisen.length === 0) {
       return {
         status: 404,
@@ -23,14 +20,14 @@ export async function load() {
   }
 }
 
-// Definiert Server-seitige Aktionen
+
 export const actions = {
   // Löscht eine Reise anhand ihrer ID
   delete: async ({ request }) => {
     try {
       const formData = await request.formData();
       const id = formData.get('id');
-      
+
       if (!id) {
         return { success: false, error: 'Keine Reise-ID angegeben' };
       }
