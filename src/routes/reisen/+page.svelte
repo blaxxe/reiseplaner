@@ -122,18 +122,24 @@
         <div class="filter-group">
           <label for="zeitraum">Zeitraum:</label>
           <div class="date-inputs">
-            <input
-              id="zeitraum"
-              type="date"
-              bind:value={startDate}
-              placeholder="Von"
-            />
-            <input
-              id="zeitraum"
-              type="date"
-              bind:value={endDate}
-              placeholder="Bis"
-            />
+            <div class="date-field">
+              <label for="start-date">Von</label>
+              <input
+                id="zeitraum"
+                type="date"
+                bind:value={startDate}
+                placeholder="Von"
+              />
+            </div>
+            <div class="date-field">
+              <label for="end-date">Bis</label>
+              <input
+                id="zeitraum"
+                type="date"
+                bind:value={endDate}
+                placeholder="Bis"
+              />
+            </div>
           </div>
         </div>
 

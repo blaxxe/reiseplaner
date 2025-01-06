@@ -554,6 +554,10 @@ REISEN PAGE
   flex: 1;
   max-width: 250px;
 }
+.date-field label {
+  font-size: 0.9rem;
+  color: #666;
+}
 
 /* Container für Formular-Submit-Buttons */
 .form-submit {
