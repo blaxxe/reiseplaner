@@ -1,5 +1,9 @@
 <script>
   export let data;
+
+  function formatDate(dateString) {
+    return new Date(dateString).toLocaleDateString('de-CH');
+  }
 </script>
 
 <!-- Prüfe ob Reisedaten vorhanden sind -->
@@ -9,8 +13,8 @@
     <img src={data.reise.image} alt={data.reise.title} class="reise-image" />
     <h1>{data.reise.title}</h1>
     <p><strong>Destination:</strong> {data.reise.destination}</p>
-    <p><strong>Startdatum:</strong> {data.reise.start_date}</p>
-    <p><strong>Enddatum:</strong> {data.reise.end_date}</p>
+    <p><strong>Startdatum:</strong> {formatDate(data.reise.start_date)}</p>
+    <p><strong>Enddatum:</strong> {formatDate(data.reise.end_date)}</p>
     <p><strong>Budget:</strong> {data.reise.budget} CHF</p>
     <p>{data.reise.description}</p>
 
